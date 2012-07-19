@@ -4,7 +4,7 @@
 # methods of World?
 
 class Runner:
-    def __init__(self):g
+    def __init__(self):
         self.world = World()
     
     def load(self):
