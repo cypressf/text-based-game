@@ -17,7 +17,7 @@ while True:
             for page in event_text:
                 print page
                 s = raw_input("press enter to continue")
-        else break
+        else: break
     
     s = raw_input("> ")
     s = s.split()
