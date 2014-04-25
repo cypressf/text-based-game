@@ -18,7 +18,7 @@ while True:
     if choice == "1":
         while True:
             e.printEvents()
-            s = raw_input(": ")
+            s = raw_input("enter event number, or \"main\" to go to main menu: ")
             if s == "main": break
             event = e.getEvent(int(s))
             print event
@@ -37,7 +37,7 @@ while True:
     elif choice  == "2":
         while True:
             e.printItems()
-            s = raw_input(": ")
+            s = raw_input("enter item number, or \"main\" to go to main menu: ")
             if s == "main": break
             item = e.getItem(int(s))
             e.printItemDetail(int(s))
@@ -45,7 +45,7 @@ while True:
     elif choice == "3":
         while True:
             e.printPeople()
-            s = raw_input(": ")
+            s = raw_input("enter person number, or \"main\" to go to main menu: ")
             if s == "main": break
             person = e.getPerson(int(s))
             e.getPersonDetail(int(s))
@@ -53,7 +53,7 @@ while True:
     elif choice == "4":
         while True:
             e.printLocations()
-            s = raw_input(": ")
+            s = raw_input("enter location number, or \"main\" to go to main menu: ")
             if s == "main": break
             location = e.getLocation(int(s))
             e.printLocationDetail(int(s))
