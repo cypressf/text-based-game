@@ -135,19 +135,25 @@ class Editor:
         """
         i = 0
         # todo: simplify the method lookup. easy way to find a method in an object??
-        for thing in self.world.__class__.__dict__[thing](self.world):
-            i = i + 1
-            print str(i) + ")", thing
+        things = self.world.__class__.__dict__[thing](self.world)
+        if len(things) == 0:
+            print("There are none of those")
+        else:
+            for thing in things:
+                i = i + 1
+                print str(i) + ")", thing
     
     def __printThingDetail__(self, thing, index):
         # todo: simplify the thing lookup. easy way to find a method in an object??
         # this is really ghastly code. it needs to be fixed up
         things_list = self.world.__class__.__dict__[thing](self.world)
-        thing = things_list[index - 1]
-        variables = vars(thing)
-        
-        for index in variables:
-            print index + ": " + repr(variables[index])
+        try:
+            thing = things_list[index - 1]
+            variables = vars(thing)
+            for index in variables:
+                print index + ": " + repr(variables[index])
+        except IndexError:
+            print(index + " isn't a valid index")
             
     def __getThing__(self, thing, index):
         # todo: simplify the thing lookup. easy way to find a method in an object??
@@ -245,7 +251,12 @@ class World:
     World has two lists: events and things. Things are all Locations, People, and Items.
     World can easily be pickled and saved so the objects can be accessed later.
     """
-    def __init__(self, things = [], events = []):
+    def __init__(self, things = None, events = None):
+        if things == None:
+            things = []
+        if events == None:
+            events = []
+
         self.things = things
         self.events = events
         self.group = None
@@ -453,8 +464,10 @@ class Location(Thing):
 class Player(Thing):
     """Represents a player in the game."""
     
-    def __init__(self, na, desc, location = None, items = []):
+    def __init__(self, na, desc, location = None, items = None):
         Thing.__init__(self, na, desc)
+        if items == None:
+            items = []
         self.location = location
         self.items = items
         self.observed_things = None
