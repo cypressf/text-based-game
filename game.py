@@ -272,7 +272,7 @@ class World:
     
     def addEvent(self, event):
         """Adds Event 'event' to self.events and sets event.world to self"""
-        if event.__class__.__name__ != "Event": return False
+        if not isinstance(event, Event): return False
         event.world = self
         self.events.append(event)
         return event
@@ -281,7 +281,7 @@ class World:
         """Adds Thing 'thing' to self.things and sets thing.world to self"""
         #todo
         #test to see if superclass is Thing, not if class is one of the following long list
-        if thing.__class__.__name__ != "Player" and thing.__class__.__name__ != "Item" and thing.__class__.__name__ != "Location" and thing.__class__.__name__ != "Person": return False
+        if not isinstance(thing, Thing): return False
         thing.world = self
         self.things.append(thing)
         return thing
@@ -316,26 +316,26 @@ class World:
         """
         instances = []
         for thing in self.things:
-            if thing.__class__.__name__ == thing_type: instances.append(thing)
+            if isinstance(thing, thing_type): instances.append(thing)
         return instances
     
     def getLocations(self):
         """Returns a list of Locations in self.things"""
-        return self.__getThings__("Location")
+        return self.__getThings__(Location)
     
     def getPlayer(self):
         """Returns the Player object in self.things"""
-        player_list = self.__getThings__("Player")
+        player_list = self.__getThings__(Player)
         if player_list == None: return None
         else: return player_list[0]
     
     def getPeople(self):
         """Returns a list of People in self.things"""
-        return self.__getThings__("Person")
+        return self.__getThings__(Person)
     
     def getItems(self):
         """Returns a list of Items in self.things"""
-        return self.__getThings__("Item")
+        return self.__getThings__(Item)
     
     def getEvents(self):
         """Returns self.events"""
@@ -606,7 +606,7 @@ class Event:
             state = trigger["state"]
             var_name = trigger["variable_name"]
             var = vars(obj)[var_name]
-            if var.__class__.__name__ == "List":
+            if isinstance(var, List):
                 if trigger["opposite"]:
                     if len(var) != len(state): return True
                     for item in var:
@@ -631,7 +631,7 @@ class Event:
             obj = action["object"]
             state = action["state"]
             var_name = action["variable_name"]
-            if vars(obj)[var_name].__class__.__name__ == "List":
+            if isinstance(vars(obj)[var_name], List):
                 if append == True:
                     vars(obj)[var_name] = vars(obj)[var_name] + state
                 else: vars(obj)[var_name] = state
