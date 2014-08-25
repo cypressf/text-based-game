@@ -136,10 +136,12 @@ class Editor:
         things = self.world.__class__.__dict__[thing](self.world)
         if len(things) == 0:
             print("There are none of those")
+            return False
         else:
             for thing in things:
                 i += 1
                 print str(i) + ")", thing
+            return True
 
     def __printThingDetail__(self, thing, index):
         # todo: simplify the thing lookup. easy way to find a method in an object??
@@ -160,25 +162,25 @@ class Editor:
         return thing
 
     def get_event(self, index):
-        return self.__getThing__("getEvents", index)
+        return self.__getThing__("get_events", index)
 
     def get_item(self, index):
-        return self.__getThing__("getItems", index)
+        return self.__getThing__("get_items", index)
 
     def get_location(self, index):
-        return self.__getThing__("getLocations", index)
+        return self.__getThing__("get_locations", index)
 
     def get_person(self, index):
-        return self.__getThing__("getPeople", index)
+        return self.__getThing__("get_people", index)
 
     def get_player(self):
         return self.world.get_player()
 
     def print_location_detail(self, index):
-        self.__printThingDetail__("getLocations", index)
+        self.__printThingDetail__("get_locations", index)
 
     def print_item_detail(self, index):
-        self.__printThingDetail__("getItems", index)
+        self.__printThingDetail__("get_items", index)
 
     def print_player_detail(self):
         player = self.world.get_player()
@@ -187,22 +189,22 @@ class Editor:
             print index + ": " + repr(variables[index])
 
     def print_person_detail(self, index):
-        self.__printThingDetail__("getPeople", index)
+        self.__printThingDetail__("get_people", index)
 
     def print_event_detail(self, index):
-        self.__printThingDetail__("getEvents", index)
+        self.__printThingDetail__("get_events", index)
 
     def print_locations(self):
-        self.__printThings__("getLocations")
+        return self.__printThings__("get_locations")
 
     def print_items(self):
-        self.__printThings__('getItems')
+        return self.__printThings__('get_items')
 
     def print_events(self):
-        self.__printThings__('getEvents')
+        return self.__printThings__('get_events')
 
     def print_people(self):
-        self.__printThings__('getPeople')
+        return self.__printThings__('get_people')
 
     def print_player(self):
         print self.world.get_player()
@@ -235,8 +237,8 @@ class Editor:
         import pickle
 
         filename = raw_input("enter a filename: ")
-        fpath = "./" + filename
-        f = open(fpath, 'w')
+        file_path = "./" + filename
+        f = open(file_path, 'w')
         pickle.dump(self.world, f)
         f.close()
         print "The world has been saved to " + filename
@@ -326,8 +328,7 @@ class World:
         return self.__getThings__("Location")
 
     def get_location(self, location_name):
-        locations = self.get_locations()
-        for location in locations:
+        for location in self.get_locations():
             if location_name.lower() == location.name.lower():
                 return location
         return None
@@ -347,6 +348,12 @@ class World:
     def get_items(self):
         """Returns a list of Items in self.things"""
         return self.__getThings__("Item")
+
+    def get_item(self, item_name):
+        for item in self.get_items():
+            if item_name == item.name:
+                return item
+        return None
 
     def get_events(self):
         """Returns self.events"""
