@@ -31,12 +31,12 @@ class Runner:
         # change add imports to top
         import pickle
 
-        filename = raw_input("enter a filename: ")
+        filename = raw_input("Enter a name for your saved game: ")
         file_path = "./" + filename
         f = open(file_path, 'w')
         pickle.dump(self.world, f)
         f.close()
-        print "The world has been saved to " + filename
+        print "The game has been saved to " + filename
 
 
 class Editor:
@@ -324,6 +324,13 @@ class World:
     def get_locations(self):
         """Returns a list of Locations in self.things"""
         return self.__getThings__("Location")
+
+    def get_location(self, location_name):
+        locations = self.get_locations()
+        for location in locations:
+            if location_name.lower() == location.name.lower():
+                return location
+        return None
 
     def get_player(self):
         """Returns the Player object in self.things"""
