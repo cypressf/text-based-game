@@ -42,7 +42,7 @@ class Runner:
 class Editor:
     """Used to easily manipulate objects in a World (stored in self.world)"""
 
-    def __init__(self, ):
+    def __init__(self):
         self.world = World()
 
     def start(self):
