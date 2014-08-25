@@ -272,16 +272,14 @@ class World:
 
     def add_event(self, event):
         """Adds Event 'event' to self.events"""
-        if event.__class__.__name__ != "Event":
+        if not isinstance(event, Event):
             return False
         self.events.append(event)
         return event
 
     def add_thing(self, thing):
         """Adds Thing 'thing' to self.things"""
-        # todo
-        # test to see if superclass is Thing, not if class is one of the following long list
-        if thing.__class__.__name__ not in ["Player", "Item", "Location", "Person"]:
+        if not isinstance(thing, Thing):
             return False
         self.things.append(thing)
         return thing
@@ -309,7 +307,7 @@ class World:
                 return event.text
         return False
 
-    def __getThings__(self, thing_type):
+    def __getThings__(self, thing_class):
         """Returns list of Things of the class thing_type
         
         Do not use this method; instead, use getLocations(),
@@ -317,13 +315,13 @@ class World:
         """
         instances = []
         for thing in self.things:
-            if thing.__class__.__name__ == thing_type:
+            if isinstance(thing, thing_class):
                 instances.append(thing)
         return instances
 
     def get_locations(self):
         """Returns a list of Locations in self.things"""
-        return self.__getThings__("Location")
+        return self.__getThings__(Location)
 
     def get_location(self, location_name):
         for location in self.get_locations():
@@ -333,7 +331,7 @@ class World:
 
     def get_player(self):
         """Returns the Player object in self.things"""
-        player_list = self.__getThings__("Player")
+        player_list = self.__getThings__(Player)
         if player_list is None:
             return None
         else:
@@ -341,11 +339,11 @@ class World:
 
     def get_people(self):
         """Returns a list of People in self.things"""
-        return self.__getThings__("Person")
+        return self.__getThings__(Person)
 
     def get_items(self):
         """Returns a list of Items in self.things"""
-        return self.__getThings__("Item")
+        return self.__getThings__(Item)
 
     def get_item(self, item_name):
         for item in self.get_items():
@@ -356,24 +354,25 @@ class World:
     def get_events(self):
         """Returns self.events"""
         return self.events
-        # todo: look over the old version of World and make sure it is not needed
-        # the old version included separate lists for each type of thing
 
-        # def __init__(self, player = None, locations = [], items = [], events = []):
-        # self.player = player
-        # self.locations = locations
-        # self.items = items
-        # self.events = events
-        # self.group = None
-        #
-        # def addPlayer(self, player):
-        #     self.player = player
-        #
-        # def addItem(self, item):
-        #     self.items.append(item)
-        #
-        # def addLocation(self, location):
-        #     self.locations.append(location)
+    # todo: look over the old version of World and make sure it is not needed
+    # the old version included separate lists for each type of thing
+    #
+    # def __init__(self, player = None, locations = [], items = [], events = []):
+    #     self.player = player
+    #     self.locations = locations
+    #     self.items = items
+    #     self.events = events
+    #     self.group = None
+    #
+    # def addPlayer(self, player):
+    #     self.player = player
+    #
+    # def addItem(self, item):
+    #     self.items.append(item)
+    #
+    # def addLocation(self, location):
+    #     self.locations.append(location)
 
 
 class Thing:
