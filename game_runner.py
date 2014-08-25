@@ -29,7 +29,15 @@ while True:
         print("drop not implemented")
 
     elif verb == "pickup":
-        print("pickup not implemented")
+        if len(command) < 2:
+            print("You consider picking up something... no, never mind")
+        else:
+            item_name = command[1]
+            item = world.get_item(item_name)
+            if item and player.pickup_item(item):
+                print("You pick up {}".format(item.name))
+            else:
+                print("You can't pick that up")
 
     elif verb == "look" or verb == "examine":
         print("look not implemented")
