@@ -45,7 +45,7 @@ class Editor:
     def __init__(self):
         self.world = World()
 
-    def __addThing__(self, type):
+    def __addThing__(self, thing_class):
         """Adds Thing of class 'type' to editor's World.
     
         Do not use this method directly; instead, use addItem, addLocation,
@@ -55,8 +55,8 @@ class Editor:
         description = raw_input("Description: ")
 
         # type is a reference to the class of object that you are creating
-        thing = type(name, description)
-        self.world.addThing(thing)
+        thing = thing_class(name, description)
+        self.world.add_thing(thing)
         return thing
 
     def add_player(self):
@@ -79,7 +79,7 @@ class Editor:
     def add_event(self):
         """Adds an Event to the editor's World"""
         event = Event()
-        self.world.addEvent(event)
+        self.world.add_event(event)
         return event
         # e = Event()
         # menu = ["Add trigger", "Add action", "Add text", "Done"]
@@ -92,10 +92,10 @@ class Editor:
         # i = 1
         # print str(i) + "---> " + "Group"
         # i = i + 1
-        #     print "Events:"
-        #     for thing in self.world.things:
-        #         print str(i) + "---> " + thing
-        #         i = i + 1
+        # print "Events:"
+        # for thing in self.world.things:
+        # print str(i) + "---> " + thing
+        # i = i + 1
         #     print "Things:"
         #     for event in self.world.events:
         #         print str(i) + "---> " +  event
@@ -138,7 +138,7 @@ class Editor:
             print("There are none of those")
         else:
             for thing in things:
-                i = i + 1
+                i += 1
                 print str(i) + ")", thing
 
     def __printThingDetail__(self, thing, index):
@@ -172,7 +172,7 @@ class Editor:
         return self.__getThing__("getPeople", index)
 
     def get_player(self):
-        return self.world.getPlayer()
+        return self.world.get_player()
 
     def print_location_detail(self, index):
         self.__printThingDetail__("getLocations", index)
@@ -181,7 +181,7 @@ class Editor:
         self.__printThingDetail__("getItems", index)
 
     def print_player_detail(self):
-        player = self.world.getPlayer()
+        player = self.world.get_player()
         variables = vars(player)
         for index in variables:
             print index + ": " + repr(variables[index])
@@ -195,19 +195,19 @@ class Editor:
     def print_locations(self):
         self.__printThings__("getLocations")
 
-    def printItems(self):
+    def print_items(self):
         self.__printThings__('getItems')
 
-    def printEvents(self):
+    def print_events(self):
         self.__printThings__('getEvents')
 
-    def printPeople(self):
+    def print_people(self):
         self.__printThings__('getPeople')
 
-    def printPlayer(self):
-        print self.world.getPlayer()
+    def print_player(self):
+        print self.world.get_player()
 
-    def printWorld(self):
+    def print_world(self):
         print self.world
 
     def load(self):
@@ -250,9 +250,9 @@ class World:
     """
 
     def __init__(self, things=None, events=None):
-        if things == None:
+        if things is None:
             things = []
-        if events == None:
+        if events is None:
             events = []
 
         self.things = things
@@ -263,14 +263,15 @@ class World:
         string = "\n"
         for thing in self.things:
             string = string + thing.__class__.__name__ + "----" + str(thing) + "\n"
-        string = string + "\n\nEvents:\n"
+        string += "\n\nEvents:\n"
         for event in self.events:
-            string = string + str(event)
+            string += str(event)
         return string
 
     def add_event(self, event):
         """Adds Event 'event' to self.events and sets event.world to self"""
-        if event.__class__.__name__ != "Event": return False
+        if event.__class__.__name__ != "Event":
+            return False
         event.world = self
         self.events.append(event)
         return event
@@ -279,14 +280,16 @@ class World:
         """Adds Thing 'thing' to self.things and sets thing.world to self"""
         # todo
         # test to see if superclass is Thing, not if class is one of the following long list
-        if thing.__class__.__name__ not in ["Player", "Item", "Location", "Person"]: return False
+        if thing.__class__.__name__ not in ["Player", "Item", "Location", "Person"]:
+            return False
         thing.world = self
         self.things.append(thing)
         return thing
 
     def make_group(self, group):
         """Sets self.group to 'group' (a list of items, normally)"""
-        if group == False: return False
+        if not group:
+            return False
         self.group = group
         return group
 
@@ -314,7 +317,8 @@ class World:
         """
         instances = []
         for thing in self.things:
-            if thing.__class__.__name__ == thing_type: instances.append(thing)
+            if thing.__class__.__name__ == thing_type:
+                instances.append(thing)
         return instances
 
     def get_locations(self):
@@ -324,7 +328,7 @@ class World:
     def get_player(self):
         """Returns the Player object in self.things"""
         player_list = self.__getThings__("Player")
-        if player_list == None:
+        if player_list is None:
             return None
         else:
             return player_list[0]
@@ -349,14 +353,14 @@ class World:
         # self.locations = locations
         # self.items = items
         # self.events = events
-        #     self.group = None
+        # self.group = None
         #
         # def addPlayer(self, player):
-        #     player.world = self
-        #     self.player = player
+        # player.world = self
+        # self.player = player
         #
         # def addItem(self, item):
-        #     item.world = self
+        # item.world = self
         #     self.items.append(item)
         #
         # def addLocation(self, location):
@@ -394,13 +398,13 @@ class Item(Thing):
         self.is_moveable = is_moveable
         self.location = location
 
-
     def move(self, destination):
         """Sets the new location of the item to be 'destination'."""
         if not self.is_moveable:
             return False
         else:
-            if self.location != None: self.location.removeItem(self)
+            if self.location is not None:
+                self.location.removeItem(self)
             self.location = destination
             destination.add_item(self)
             return True
@@ -442,22 +446,22 @@ class Location(Thing):
         self.locations = locations
         self.items = items
 
-    def addItem(self, item):
-        if self.items == None:
+    def add_item(self, item):
+        if self.items is None:
             self.items = [item]
         else:
             self.items.append(item)
 
-    def addLocation(self, location):
-        if self.locations == None:
+    def add_location(self, location):
+        if self.locations is None:
             self.locations = [location]
         else:
             self.locations.append(location)
 
-    def removeLocation(self, location):
+    def remove_location(self, location):
         self.locations.remove(location)
 
-    def removeItem(self, item):
+    def remove_item(self, item):
         self.items.remove(item)
 
 
@@ -466,31 +470,33 @@ class Player(Thing):
 
     def __init__(self, na, desc, location=None, items=None):
         Thing.__init__(self, na, desc)
-        if items == None:
+        if items is None:
             items = []
         self.location = location
         self.items = items
         self.observed_things = None
 
-    def canMove(self, location):
-        if self.location == None: return False
-        if self.location.locations == None: return False
+    def can_move(self, location):
+        if self.location is None:
+            return False
+        if self.location.locations is None:
+            return False
         return location in self.location.locations
 
     def move(self, location):
-        if self.canMove(location):
+        if self.can_move(location):
             self.location = location
             return True
         else:
             return False
 
-    def addItem(self, item):
+    def add_item(self, item):
         self.items.append(item)
 
-    def removeItem(self, item):
+    def remove_item(self, item):
         self.items.remove(item)
 
-    def dropItem(self, item):
+    def drop_item(self, item):
         """Player gets rid of item, placing it in the current location.
         
         Don't do anything if the player is not in a location or doesn't
@@ -503,7 +509,7 @@ class Player(Thing):
         else:
             return item.move(self.location)
 
-    def pickupItem(self, item):
+    def pickup_item(self, item):
         """Player picks up item from current location."""
         if item not in self.location.items:
             return False
@@ -511,21 +517,20 @@ class Player(Thing):
             item.move(self)
             return True
 
-
     def observe(self, thing):
 
-        thing.observed = thing.observed + 1
-        if self.observed_things == None:
+        thing.observed += 1
+        if self.observed_things is None:
             self.observed_things = [thing]
         else:
             self.observed_things.append(thing)
         return True
 
-
     def use(self, things):
         for thing in things:
-            useable_things = self.location.items + self.items + [self.location]
-            if thing not in (useable_things): return False
+            usable_things = self.location.items + self.items + [self.location]
+            if thing not in usable_things:
+                return False
         return things
 
 
@@ -559,7 +564,8 @@ class Event:
                 var = trigger["variable_name"]
                 trigger_state = trigger["state"]
                 current_state = vars(obj)[var]
-                if current_state == trigger_state: string = string + "* "
+                if current_state == trigger_state:
+                    string += "* "
                 string = string + var + " of " + repr(obj) + ": current state " + str(
                     current_state) + ", trigger state " + str(trigger_state) + "\n"
 
@@ -595,14 +601,15 @@ class Event:
         else:
             self.actions.append({"object": obj, "variable_name": variable, "state": value})
 
-    def add_text(self, str):
+    def add_text(self, text):
         if self.text is None:
-            self.text = [str]
+            self.text = [text]
         else:
-            self.text.append(str)
+            self.text.append(text)
 
     def check(self):
-        if self.is_used: return False
+        if self.is_used:
+            return False
         if self.triggers is None:
             return True
         for trigger in self.triggers:
@@ -612,25 +619,32 @@ class Event:
             var = vars(obj)[var_name]
             if var.__class__.__name__ == "List":
                 if trigger["opposite"]:
-                    if len(var) != len(state): return True
+                    if len(var) != len(state):
+                        return True
                     for item in var:
-                        if item not in state: return True
+                        if item not in state:
+                            return True
                     return False
 
                 else:
-                    if len(var) != len(state): return False
+                    if len(var) != len(state):
+                        return False
                     for item in var:
-                        if item not in state: return False
+                        if item not in state:
+                            return False
                     return True
             else:
                 if trigger["opposite"]:
-                    if var == state: return False
+                    if var == state:
+                        return False
                 else:
-                    if var != state: return False
+                    if var != state:
+                        return False
         return True
 
     def execute(self, append=True):
-        if self.is_used: return False
+        if self.is_used:
+            return False
         for action in self.actions:
             obj = action["object"]
             state = action["state"]
