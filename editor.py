@@ -1,14 +1,11 @@
 #!/usr/bin/python
 
 from game import *
-import pickle
-import os
-import string
-e = Editor()
-e.load()
+editor = Editor()
+editor.load()
 
 while True:
-    menu1 = ["events","items","people","locations","player", "quit"]
+    menu1 = ["events", "items", "people", "locations", "player", "quit"]
     i = 1
     for item in menu1:
         print str(i) + ") " + item
@@ -17,10 +14,11 @@ while True:
     choice = raw_input(": ")
     if choice == "1":
         while True:
-            e.printEvents()
+            editor.print_events()
             s = raw_input("enter event number, or \"main\" to go to main menu: ")
-            if s == "main": break
-            event = e.get_event(int(s))
+            if s == "main":
+                break
+            event = editor.get_event(int(s))
             print event
             # todo create an event editor
             # while True:
@@ -34,43 +32,46 @@ while True:
             #                     if cmd[1].lower() == "trigger":
             #                 else: continue
         
-    elif choice  == "2":
+    elif choice == "2":
         while True:
-            e.printItems()
+            editor.print_items()
             s = raw_input("enter item number, or \"main\" to go to main menu: ")
             if s == "main": break
-            item = e.get_item(int(s))
-            e.print_item_detail(int(s))
+            item = editor.get_item(int(s))
+            editor.print_item_detail(int(s))
         
     elif choice == "3":
         while True:
-            e.printPeople()
+            editor.print_people()
             s = raw_input("enter person number, or \"main\" to go to main menu: ")
-            if s == "main": break
-            person = e.get_person(int(s))
-            e.getPersonDetail(int(s))
+            if s == "main":
+                break
+            person = editor.get_person(int(s))
+            editor.print_person_detail(int(s))
         
     elif choice == "4":
         while True:
-            e.print_locations()
+            editor.print_locations()
             s = raw_input("enter location number, or \"main\" to go to main menu: ")
-            if s == "main": break
-            location = e.get_location(int(s))
-            e.print_location_detail(int(s))
+            if s == "main":
+                break
+            location = editor.get_location(int(s))
+            editor.print_location_detail(int(s))
         
     elif choice == "5":
-        e.print_player_detail()
-        player = e.get_player()
+        editor.print_player_detail()
+        player = editor.get_player()
         
     elif choice == "6":
         while True:
             s = raw_input("Would you like to save first? (y/n): ")
             if s.lower() in ["yes", "y", "yep"]:
-                e.save()
+                editor.save()
                 exit()
             elif s.lower() in ["n", "no", "nope", "naw", "naw bra"]:
                 exit()
-            else: print "Please type 'yes' or 'no'"
+            else:
+                print "Please type 'yes' or 'no'"
     else:
         print "Enter a number from 1 to 6"
         continue
