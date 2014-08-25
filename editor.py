@@ -40,27 +40,27 @@ while True:
             s = raw_input("enter item number, or \"main\" to go to main menu: ")
             if s == "main": break
             item = e.get_item(int(s))
-            e.printItemDetail(int(s))
+            e.print_item_detail(int(s))
         
     elif choice == "3":
         while True:
             e.printPeople()
             s = raw_input("enter person number, or \"main\" to go to main menu: ")
             if s == "main": break
-            person = e.getPerson(int(s))
+            person = e.get_person(int(s))
             e.getPersonDetail(int(s))
         
     elif choice == "4":
         while True:
-            e.printLocations()
+            e.print_locations()
             s = raw_input("enter location number, or \"main\" to go to main menu: ")
             if s == "main": break
             location = e.get_location(int(s))
-            e.printLocationDetail(int(s))
+            e.print_location_detail(int(s))
         
     elif choice == "5":
-        e.printPlayerDetail()
-        player = e.getPlayer()
+        e.print_player_detail()
+        player = e.get_player()
         
     elif choice == "6":
         while True:

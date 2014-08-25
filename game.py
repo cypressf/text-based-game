@@ -168,31 +168,31 @@ class Editor:
     def get_location(self, index):
         return self.__getThing__("getLocations", index)
 
-    def getPerson(self, index):
+    def get_person(self, index):
         return self.__getThing__("getPeople", index)
 
-    def getPlayer(self):
+    def get_player(self):
         return self.world.getPlayer()
 
-    def printLocationDetail(self, index):
+    def print_location_detail(self, index):
         self.__printThingDetail__("getLocations", index)
 
-    def printItemDetail(self, index):
+    def print_item_detail(self, index):
         self.__printThingDetail__("getItems", index)
 
-    def printPlayerDetail(self):
+    def print_player_detail(self):
         player = self.world.getPlayer()
         variables = vars(player)
         for index in variables:
             print index + ": " + repr(variables[index])
 
-    def printPersonDetail(self, index):
+    def print_person_detail(self, index):
         self.__printThingDetail__("getPeople", index)
 
-    def printEventDetail(self, index):
+    def print_event_detail(self, index):
         self.__printThingDetail__("getEvents", index)
 
-    def printLocations(self):
+    def print_locations(self):
         self.__printThings__("getLocations")
 
     def printItems(self):
@@ -268,14 +268,14 @@ class World:
             string = string + str(event)
         return string
 
-    def addEvent(self, event):
+    def add_event(self, event):
         """Adds Event 'event' to self.events and sets event.world to self"""
         if event.__class__.__name__ != "Event": return False
         event.world = self
         self.events.append(event)
         return event
 
-    def addThing(self, thing):
+    def add_thing(self, thing):
         """Adds Thing 'thing' to self.things and sets thing.world to self"""
         # todo
         # test to see if superclass is Thing, not if class is one of the following long list
@@ -284,13 +284,13 @@ class World:
         self.things.append(thing)
         return thing
 
-    def makeGroup(self, group):
+    def make_group(self, group):
         """Sets self.group to 'group' (a list of items, normally)"""
         if group == False: return False
         self.group = group
         return group
 
-    def clearGroup(self):
+    def clear_group(self):
         """Sets self.group to None"""
         self.group = None
 
@@ -298,7 +298,7 @@ class World:
     # test loadEvents to make sure it executes event only when check() returns true
     # I think it's always executing it, or something weird because 'if event.check()'
     # is not the same as 'bool = event.check(), if bool'
-    def loadEvents(self):
+    def load_events(self):
         """Checks all events in self.events and executes them if they are triggered."""
         for event in self.events:
             if event.check():
@@ -317,11 +317,11 @@ class World:
             if thing.__class__.__name__ == thing_type: instances.append(thing)
         return instances
 
-    def getLocations(self):
+    def get_locations(self):
         """Returns a list of Locations in self.things"""
         return self.__getThings__("Location")
 
-    def getPlayer(self):
+    def get_player(self):
         """Returns the Player object in self.things"""
         player_list = self.__getThings__("Player")
         if player_list == None:
@@ -329,15 +329,15 @@ class World:
         else:
             return player_list[0]
 
-    def getPeople(self):
+    def get_people(self):
         """Returns a list of People in self.things"""
         return self.__getThings__("Person")
 
-    def getItems(self):
+    def get_items(self):
         """Returns a list of Items in self.things"""
         return self.__getThings__("Item")
 
-    def getEvents(self):
+    def get_events(self):
         """Returns self.events"""
         return self.events
         # todo
