@@ -13,9 +13,9 @@ def events_menu():
         if s == "main":
             break
         elif s.isdigit():
+            # todo edit the event
             event = editor.get_event(int(s))
             print event
-            # todo create an event editor
             # while True:
             #                 cmd = raw_input("type 'add' or 'remove' followed by 'trigger' or 'action'")
             #                 cmd = cmd.split()
@@ -36,6 +36,7 @@ def items_menu():
         if s == "main":
             break
         elif s.isdigit():
+            # todo: edit the item
             item = editor.get_item(int(s))
             editor.print_item_detail(int(s))
 
@@ -48,6 +49,7 @@ def people_menu():
         if s == "main":
             break
         elif s.isdigit():
+            # todo: edit the person
             person = editor.get_person(int(s))
             editor.print_person_detail(int(s))
 
@@ -60,13 +62,14 @@ def locations_menu():
         if s == "main":
             break
         elif s.isdigit():
+            # todo: edit the location
             location = editor.get_location(int(s))
             editor.print_location_detail(int(s))
-
 
 def player_menu():
     editor.print_player_detail()
     player = editor.get_player()
+    # todo: edit the player
 
 
 def quit_menu():
