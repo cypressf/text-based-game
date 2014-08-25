@@ -280,7 +280,7 @@ class World:
         """Adds Thing 'thing' to self.things and sets thing.world to self"""
         # todo
         # test to see if superclass is Thing, not if class is one of the following long list
-        if thing.__class__.__name__ != "Player" and thing.__class__.__name__ != "Item" and thing.__class__.__name__ != "Location" and thing.__class__.__name__ != "Person": return False
+        if thing.__class__.__name__ not in ["Player", "Item", "Location", "Person"]: return False
         thing.world = self
         self.things.append(thing)
         return thing
@@ -301,7 +301,7 @@ class World:
     # is not the same as 'bool = event.check(), if bool'
     def loadEvents(self):
         """Checks all events in self.events and executes them if they are triggered."""
-        for event in events:
+        for event in self.events:
             if event.check():
                 event.execute()
                 return event.text
@@ -693,14 +693,14 @@ class Conversation:
         i = 1
         for question in self.questions:
             string = string + str(i) + ") " + str(question) + "\n"
-            i = i + 1
+            i += 1
         return string
 
     def addQuestion(self, question):
-        if self.questions == None:
+        if self.questions is None:
             self.questions = [question]
         else:
-            self.question.append(question)
+            self.questions.append(question)
 
     def ask(self, index):
         q = self.questions[index - 1]
