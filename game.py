@@ -42,21 +42,117 @@ class Runner:
 class Editor:
     """Used to easily manipulate objects in a World (stored in self.world)"""
 
-    def __init__(self):
+    def __init__(self, ):
         self.world = World()
+
+    def start(self):
+        self.load()
+        while True:
+            main_menu_order = ["events", "items", "people", "locations", "player", "quit"]
+            main_menu = {
+                "events": self.events_menu,
+                "items": self.items_menu,
+                "people": self.people_menu,
+                "locations": self.locations_menu,
+                "player": self.player_menu,
+                "quit": self.quit_menu
+            }
+
+            for menu_name in main_menu_order:
+                print("-> " + menu_name)
+
+            choice = raw_input(": ")
+            if choice in main_menu:
+                main_menu[choice]()
+            else:
+                print "Select an item to edit"
+                continue
+
+    def events_menu(self):
+        while True:
+            if not self.print_things(self.world.events):
+                break
+            s = raw_input("enter event number, or \"main\" to go to main menu: ")
+            if s == "main":
+                break
+            elif s.isdigit():
+                # todo edit the event
+                event = self.world.events[int(s) - 1]
+                # while True:
+                #                 cmd = raw_input("type 'add' or 'remove' followed by 'trigger' or 'action'")
+                #                 cmd = cmd.split()
+                #                 if cmd[0].lower() == "add":
+                #                     if cmd[1].lower() == "action":
+                #                     if cmd[1].lower() == "trigger":
+                #                 elif cmd[0].lower() == "remove":
+                #                     if cmd[1].lower() == "action":
+                #                     if cmd[1].lower() == "trigger":
+                #                 else: continue
+
+    def items_menu(self):
+        while True:
+            if not self.print_things(self.world.items):
+                break
+            s = raw_input("enter item number, or \"main\" to go to main menu: ")
+            if s == "main":
+                break
+            elif s.isdigit():
+                # todo: edit the item
+                item = self.world.items[int(s) - 1]
+                self.print_thing_details(item)
+
+    def people_menu(self):
+        while True:
+            if not self.print_things(self.world.characters):
+                break
+            s = raw_input("enter person number, or \"main\" to go to main menu: ")
+            if s == "main":
+                break
+            elif s.isdigit():
+                # todo: edit the person
+                person = self.world.characters[int(s) - 1]
+                self.print_thing_details(person)
+
+    def locations_menu(self):
+        while True:
+            if not self.print_things(self.world.characters):
+                break
+            s = raw_input("enter location number, or \"main\" to go to main menu: ")
+            if s == "main":
+                break
+            elif s.isdigit():
+                # todo: edit the location
+                location = self.world.locations[int(s) - 1]
+                self.print_thing_details(location)
+
+    def player_menu(self):
+        self.print_thing_details(self.world.player)
+        # todo: edit the player
+
+    def quit_menu(self):
+        while True:
+            s = raw_input("Would you like to save first? (y/n): ")
+            if s.lower() in ["yes", "y", "yep"]:
+                self.save()
+                exit()
+            elif s.lower() in ["n", "no", "nope", "naw", "naw bra"]:
+                exit()
+            else:
+                print "Please type 'yes' or 'no'"
 
     def __addThing__(self, thing_class):
         """Adds Thing of class 'type' to editor's World.
     
-        Do not use this method directly; instead, use addItem, addLocation,
-        addPlayer, or addPerson.
+        Do not use this method directly; instead, use add_item, add_location,
+        add_player, or add_person.
         """
         name = raw_input("Name: ")
         description = raw_input("Description: ")
 
-        # type is a reference to the class of object that you are creating
+        # thing_class is a reference to the class of object that you are creating
         thing = thing_class(name, description)
         self.world.add_thing(thing)
+
         return thing
 
     def add_player(self):
@@ -122,18 +218,9 @@ class Editor:
         # self.world.addThing(thing)
         # return thing
 
-    # consolidate all print methods into one "__printThings__" method that takes a
-    # 'thing type' argument, and then make printLocations, items, events, etc
-    # all call the __printThings__ method with their type. look up pythons class method
-    # list. e.g. use world.__dict__['getLocations'] to refer to the getLocations() method
-    def __printThings__(self, thing):
-        """Prints a thing specified by 'thing'.
-        
-        Do not use; instead, use printEvents, printItems, etc.
-        """
+    def print_things(self, things):
+        """Prints the things passed to it."""
         i = 0
-        # todo: simplify the method lookup. easy way to find a method in an object??
-        things = self.world.__class__.__dict__[thing](self.world)
         if len(things) == 0:
             print("There are none of those")
             return False
@@ -143,74 +230,10 @@ class Editor:
                 print str(i) + ")", thing
             return True
 
-    def __printThingDetail__(self, thing, index):
-        # todo: simplify the thing lookup. easy way to find a method in an object??
-        # this is really ghastly code. it needs to be fixed up
-        things_list = self.world.__class__.__dict__[thing](self.world)
-        try:
-            thing = things_list[index - 1]
-            variables = vars(thing)
-            for index in variables:
-                print index + ": " + repr(variables[index])
-        except IndexError:
-            print(index + " isn't a valid index")
-
-    def __getThing__(self, thing, index):
-        # todo: simplify the thing lookup. easy way to find a method in an object??
-        # this is really ghastly code. it needs to be fixed up
-        thing = self.world.__class__.__dict__[thing](self.world)[index - 1]
-        return thing
-
-    def get_event(self, index):
-        return self.__getThing__("get_events", index)
-
-    def get_item(self, index):
-        return self.__getThing__("get_items", index)
-
-    def get_location(self, index):
-        return self.__getThing__("get_locations", index)
-
-    def get_person(self, index):
-        return self.__getThing__("get_people", index)
-
-    def get_player(self):
-        return self.world.get_player()
-
-    def print_location_detail(self, index):
-        self.__printThingDetail__("get_locations", index)
-
-    def print_item_detail(self, index):
-        self.__printThingDetail__("get_items", index)
-
-    def print_player_detail(self):
-        player = self.world.get_player()
-        variables = vars(player)
+    def print_thing_details(self, thing):
+        variables = vars(thing)
         for index in variables:
             print index + ": " + repr(variables[index])
-
-    def print_person_detail(self, index):
-        self.__printThingDetail__("get_people", index)
-
-    def print_event_detail(self, index):
-        self.__printThingDetail__("get_events", index)
-
-    def print_locations(self):
-        return self.__printThings__("get_locations")
-
-    def print_items(self):
-        return self.__printThings__('get_items')
-
-    def print_events(self):
-        return self.__printThings__('get_events')
-
-    def print_people(self):
-        return self.__printThings__('get_people')
-
-    def print_player(self):
-        print self.world.get_player()
-
-    def print_world(self):
-        print self.world
 
     def load(self):
         """Loads a World from a pickled file and places it in Editor's World"""
@@ -251,49 +274,33 @@ class World:
     World can easily be pickled and saved so the objects can be accessed later.
     """
 
-    def __init__(self, things=None, events=None):
-        if things is None:
-            things = []
+    def __init__(self, player=None, locations=None, items=None, events=None, characters=None):
+        if locations is None:
+            locations = []
+        if items is None:
+            items = []
         if events is None:
             events = []
+        if characters is None:
+            characters = []
 
-        self.things = things
+        self.locations = locations
+        self.player = player
+        self.items = items
         self.events = events
+        self.characters = characters
         self.group = None
 
     def __str__(self):
         string = "\n"
-        for thing in self.things:
-            string = string + thing.__class__.__name__ + "----" + str(thing) + "\n"
-        string += "\n\nEvents:\n"
+        string += format("Player ---- {}\n", str(self.player))
+        for location in self.locations:
+            string += format("Location ---- {}\n", str(location))
+        for item in self.items:
+            string += format("Items ---- {}\n", str(item))
         for event in self.events:
-            string += str(event)
+            string += format("Event ---- {}\n", str(event))
         return string
-
-    def add_event(self, event):
-        """Adds Event 'event' to self.events"""
-        if not isinstance(event, Event):
-            return False
-        self.events.append(event)
-        return event
-
-    def add_thing(self, thing):
-        """Adds Thing 'thing' to self.things"""
-        if not isinstance(thing, Thing):
-            return False
-        self.things.append(thing)
-        return thing
-
-    def make_group(self, group):
-        """Sets self.group to 'group' (a list of items, normally)"""
-        if not group:
-            return False
-        self.group = group
-        return group
-
-    def clear_group(self):
-        """Sets self.group to None"""
-        self.group = None
 
     # todo
     # test loadEvents to make sure it executes event only when check() returns true
@@ -307,72 +314,39 @@ class World:
                 return event.text
         return False
 
-    def __getThings__(self, thing_class):
-        """Returns list of Things of the class thing_type
-        
-        Do not use this method; instead, use getLocations(),
-        getPlayer(), getPeople(), and getItems().
-        """
-        instances = []
-        for thing in self.things:
-            if isinstance(thing, thing_class):
-                instances.append(thing)
-        return instances
-
-    def get_locations(self):
-        """Returns a list of Locations in self.things"""
-        return self.__getThings__(Location)
-
     def get_location(self, location_name):
-        for location in self.get_locations():
+        for location in self.locations:
             if location_name.lower() == location.name.lower():
                 return location
         return None
 
-    def get_player(self):
-        """Returns the Player object in self.things"""
-        player_list = self.__getThings__(Player)
-        if player_list is None:
-            return None
-        else:
-            return player_list[0]
-
-    def get_people(self):
-        """Returns a list of People in self.things"""
-        return self.__getThings__(Person)
-
-    def get_items(self):
-        """Returns a list of Items in self.things"""
-        return self.__getThings__(Item)
-
     def get_item(self, item_name):
-        for item in self.get_items():
+        for item in self.items:
             if item_name == item.name:
                 return item
         return None
 
-    def get_events(self):
-        """Returns self.events"""
-        return self.events
+    def get_things(self, thing_class):
+        things = []
+        if thing_class is Item:
+            things = self.items
+        elif thing_class is Person:
+            things = self.characters
+        elif thing_class is Location:
+            things = self.locations
+        elif thing_class is Player:
+            things = [self.player]
+        return things
 
-    # todo: look over the old version of World and make sure it is not needed
-    # the old version included separate lists for each type of thing
-    #
-    # def __init__(self, player = None, locations = [], items = [], events = []):
-    #     self.player = player
-    #     self.locations = locations
-    #     self.items = items
-    #     self.events = events
-    #     self.group = None
-    #
-    # def addPlayer(self, player):
-    #     self.player = player
-    #
-    # def addItem(self, item):
-    #     self.items.append(item)
-    #
-    # def addLocation(self, location):
-    #     self.locations.append(location)
+    def add_thing(self, thing):
+        if isinstance(thing, Person):
+            self.characters.append(thing)
+        elif isinstance(thing, Location):
+            self.locations.append(thing)
+        elif isinstance(thing, Item):
+            self.items(thing)
+        elif isinstance(thing, Player):
+            self.player = thing
 
 
 class Thing:
@@ -395,7 +369,7 @@ class Item(Thing):
         """Creates an Item.
         
         Just like a Thing, an item only requires a name and a description,
-        but a location, linked items, and an "is moveable" boolean can be
+        but a location, linked items, and an "is movable" boolean can be
         added.
         
         """
