@@ -271,20 +271,18 @@ class World:
         return string
 
     def add_event(self, event):
-        """Adds Event 'event' to self.events and sets event.world to self"""
+        """Adds Event 'event' to self.events"""
         if event.__class__.__name__ != "Event":
             return False
-        event.world = self
         self.events.append(event)
         return event
 
     def add_thing(self, thing):
-        """Adds Thing 'thing' to self.things and sets thing.world to self"""
+        """Adds Thing 'thing' to self.things"""
         # todo
         # test to see if superclass is Thing, not if class is one of the following long list
         if thing.__class__.__name__ not in ["Player", "Item", "Location", "Person"]:
             return False
-        thing.world = self
         self.things.append(thing)
         return thing
 
@@ -358,9 +356,8 @@ class World:
     def get_events(self):
         """Returns self.events"""
         return self.events
-        # todo
-        # look over the old version of World and make sure it is not needed
-        # the old version included seperate lists for each type of thing
+        # todo: look over the old version of World and make sure it is not needed
+        # the old version included separate lists for each type of thing
 
         # def __init__(self, player = None, locations = [], items = [], events = []):
         # self.player = player
@@ -370,24 +367,19 @@ class World:
         # self.group = None
         #
         # def addPlayer(self, player):
-        # player.world = self
-        # self.player = player
+        #     self.player = player
         #
         # def addItem(self, item):
-        # item.world = self
         #     self.items.append(item)
         #
         # def addLocation(self, location):
-        #     location.world = self
         #     self.locations.append(location)
-        #
 
 
 class Thing:
     """Building block for most objects in the game."""
 
-    def __init__(self, name, description, world=None):
-        self.world = world
+    def __init__(self, name, description):
         self.name = name
         self.description = description
         self.is_hidden = False
@@ -400,7 +392,7 @@ class Thing:
 class Item(Thing):
     """Represents all Items in the game."""
 
-    def __init__(self, name, description, location=None, is_moveable=False):
+    def __init__(self, name, description, location=None, is_movable=False):
         """Creates an Item.
         
         Just like a Thing, an item only requires a name and a description,
@@ -409,12 +401,12 @@ class Item(Thing):
         
         """
         Thing.__init__(self, name, description)
-        self.is_moveable = is_moveable
+        self.is_movable = is_movable
         self.location = location
 
     def move(self, destination):
         """Sets the new location of the item to be 'destination'."""
-        if not self.is_moveable:
+        if not self.is_movable:
             return False
         else:
             if self.location is not None:
@@ -431,8 +423,8 @@ class Person(Item):
     have a conversation object in them as well
     """
 
-    def __init__(self, name, description, location=None, is_moveable=False, conversation=None):
-        Item.__init__(self, name, description, location, is_moveable)
+    def __init__(self, name, description, location=None, is_movable=False, conversation=None):
+        Item.__init__(self, name, description, location, is_movable)
         self.conversation = conversation
 
     def __str__(self):
@@ -541,8 +533,8 @@ class Player(Thing):
         return True
 
     def use(self, things):
+        usable_things = self.location.items + self.items + [self.location]
         for thing in things:
-            usable_things = self.location.items + self.items + [self.location]
             if thing not in usable_things:
                 return False
         return things
@@ -566,7 +558,6 @@ class Event:
         self.is_used = False  # to prevent multiple executions
         self.text = None  # [page1, page2, page3... ] what it tells the player as the event is happening
         self.location = None
-        self.world = None
 
     def __str__(self):
         if self.triggers is None:
