@@ -422,26 +422,26 @@ class Location(Thing):
 
     def __init__(self, name, description, locations=None, items=None):
         Thing.__init__(self, name, description)
+        if locations is None:
+            locations = []
+        if items is None:
+            items = []
         self.locations = locations
         self.items = items
 
     def add_item(self, item):
-        if self.items is None:
-            self.items = [item]
-        else:
-            self.items.append(item)
+        self.items.append(item)
 
     def add_location(self, location):
-        if self.locations is None:
-            self.locations = [location]
-        else:
-            self.locations.append(location)
+        self.locations.append(location)
 
     def remove_location(self, location):
         self.locations.remove(location)
 
+
     def remove_item(self, item):
         self.items.remove(item)
+
 
 
 class Player(Thing):
@@ -453,7 +453,7 @@ class Player(Thing):
             items = []
         self.location = location
         self.items = items
-        self.observed_things = None
+        self.observed_things = []
 
     def can_move(self, location):
         if self.location is None:
@@ -497,13 +497,8 @@ class Player(Thing):
             return True
 
     def observe(self, thing):
-
         thing.observed += 1
-        if self.observed_things is None:
-            self.observed_things = [thing]
-        else:
-            self.observed_things.append(thing)
-        return True
+        self.observed_things.append(thing)
 
     def use(self, things):
         usable_things = self.location.items + self.items + [self.location]
@@ -641,25 +636,16 @@ class Event:
 class Answer:
     def __init__(self, text):
         self.text = text
-        self.questions = None
+        self.questions = []
 
     def __str__(self):
         return self.text
 
     def add_question(self, question):
-        if self.questions is None:
-            self.questions = [question]
-        else:
-            self.questions.append(question)
+        self.questions.append(question)
 
     def remove_question(self, question):
-        if self.questions is None:
-            return False
-        for q in self.questions:
-            if q is question:
-                self.questions.remove(question)
-                return True
-        return False
+        self.questions.remove(question)
 
 
 class Question:
@@ -677,7 +663,7 @@ class Question:
 
 class Conversation:
     def __init__(self):
-        self.questions = None
+        self.questions = []
 
     def __str__(self):
         string = ""
@@ -688,12 +674,9 @@ class Conversation:
         return string
 
     def add_question(self, question):
-        if self.questions is None:
-            self.questions = [question]
-        else:
-            self.questions.append(question)
+        self.questions.append(question)
 
     def ask(self, index):
-        q = self.questions[index - 1]
-        q.is_used = True
-        return q.answer
+        question = self.questions[index - 1]
+        question.is_used = True
+        return question.answer
