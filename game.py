@@ -2,6 +2,7 @@
 # methods of Runner and Editor? functions of the game package?
 # methods of World?
 
+
 class Runner:
     def __init__(self):
         self.world = World()
@@ -44,7 +45,6 @@ class Editor:
     def __init__(self):
         self.world = World()
 
-
     def __addThing__(self, type):
         """Adds Thing of class 'type' to editor's World.
     
@@ -59,24 +59,24 @@ class Editor:
         self.world.addThing(thing)
         return thing
 
-    def addPlayer(self):
+    def add_player(self):
         """Adds a Player to the editor's World"""
         player = self.__addThing__(Player)
         print "Player " + player.name + " was created!"
 
-    def addItem(self):
+    def add_item(self):
         """Adds an Item to the editor's World"""
         item = self.__addThing__(Item)
         print "Item " + item.name + " was created!"
 
-    def addLocation(self):
+    def add_location(self):
         """Adds a Location to the editor's World"""
         location = self.__addThing__(Location)
         print "Location " + location.name + " was created!"
 
     # todo
     # finish the addEvent method
-    def addEvent(self):
+    def add_event(self):
         """Adds an Event to the editor's World"""
         event = Event()
         self.world.addEvent(event)
@@ -88,10 +88,10 @@ class Editor:
         # print str(i) + ". " + item
         # choice = raw_input(": ")
         # if choice == "1":
-        #     objs = [self.world.group] + [self.world.things] + [self.world.events]
-        #     i = 1
-        #     print str(i) + "---> " + "Group"
-        #     i = i + 1
+        # objs = [self.world.group] + [self.world.things] + [self.world.events]
+        # i = 1
+        # print str(i) + "---> " + "Group"
+        # i = i + 1
         #     print "Events:"
         #     for thing in self.world.things:
         #         print str(i) + "---> " + thing
@@ -121,7 +121,6 @@ class Editor:
         # thing = type(name, description)
         # self.world.addThing(thing)
         # return thing
-
 
     # consolidate all print methods into one "__printThings__" method that takes a
     # 'thing type' argument, and then make printLocations, items, events, etc
@@ -160,13 +159,13 @@ class Editor:
         thing = self.world.__class__.__dict__[thing](self.world)[index - 1]
         return thing
 
-    def getEvent(self, index):
+    def get_event(self, index):
         return self.__getThing__("getEvents", index)
 
-    def getItem(self, index):
+    def get_item(self, index):
         return self.__getThing__("getItems", index)
 
-    def getLocation(self, index):
+    def get_location(self, index):
         return self.__getThing__("getLocations", index)
 
     def getPerson(self, index):
@@ -346,10 +345,10 @@ class World:
         # the old version included seperate lists for each type of thing
 
         # def __init__(self, player = None, locations = [], items = [], events = []):
-        #     self.player = player
-        #     self.locations = locations
-        #     self.items = items
-        #     self.events = events
+        # self.player = player
+        # self.locations = locations
+        # self.items = items
+        # self.events = events
         #     self.group = None
         #
         # def addPlayer(self, player):
@@ -403,7 +402,7 @@ class Item(Thing):
         else:
             if self.location != None: self.location.removeItem(self)
             self.location = destination
-            destination.addItem(self)
+            destination.add_item(self)
             return True
 
 
@@ -551,7 +550,7 @@ class Event:
         self.world = None
 
     def __str__(self):
-        if self.triggers == None:
+        if self.triggers is None:
             string = "No triggers\n"
         else:
             string = "Triggers:\n"
@@ -564,10 +563,10 @@ class Event:
                 string = string + var + " of " + repr(obj) + ": current state " + str(
                     current_state) + ", trigger state " + str(trigger_state) + "\n"
 
-        if self.actions == None:
-            string = string + "No actions\n"
+        if self.actions is None:
+            string += "No actions\n"
         else:
-            string = string + "\nActions:\n"
+            string += "\nActions:\n"
             for action in self.actions:
                 obj = action["object"]
                 var = action["variable_name"]
@@ -576,35 +575,35 @@ class Event:
                 string = string + var + " of " + repr(obj) + ": current state " + str(
                     current_state) + ", new state " + str(new_state) + "\n"
 
-        if self.text == None:
-            string = string + "No text"
+        if self.text is None:
+            string += "No text"
         else:
-            string = string + "\nText:\n"
+            string += "\nText:\n"
             for page in self.text:
                 string = string + page + "\n-----------------\n"
         return string
 
-    def addTrigger(self, obj, variable, value, opposite=False):
-        if self.triggers == None:
+    def add_trigger(self, obj, variable, value, opposite=False):
+        if self.triggers is None:
             self.triggers = [{"object": obj, "variable_name": variable, "state": value, "opposite": opposite}]
         else:
             self.triggers.append({"object": obj, "variable_name": variable, "state": value, "opposite": opposite})
 
-    def addAction(self, obj, variable, value):
-        if self.actions == None:
+    def add_action(self, obj, variable, value):
+        if self.actions is None:
             self.actions = [{"object": obj, "variable_name": variable, "state": value}]
         else:
             self.actions.append({"object": obj, "variable_name": variable, "state": value})
 
-    def addText(self, str):
-        if self.text == None:
+    def add_text(self, str):
+        if self.text is None:
             self.text = [str]
         else:
             self.text.append(str)
 
     def check(self):
         if self.is_used: return False
-        if self.triggers == None:
+        if self.triggers is None:
             return True
         for trigger in self.triggers:
             obj = trigger["object"]
@@ -637,7 +636,7 @@ class Event:
             state = action["state"]
             var_name = action["variable_name"]
             if vars(obj)[var_name].__class__.__name__ == "List":
-                if append == True:
+                if append:
                     vars(obj)[var_name] = vars(obj)[var_name] + state
                 else:
                     vars(obj)[var_name] = state
@@ -652,23 +651,23 @@ class Answer:
         self.text = text
         self.questions = None
 
-        def __str__(self):
-            return text
+    def __str__(self):
+        return self.text
 
-        def addQuestion(self, question):
-            if self.questions == None:
-                self.questions = [question]
-            else:
-                self.questions.append(question)
+    def add_question(self, question):
+        if self.questions is None:
+            self.questions = [question]
+        else:
+            self.questions.append(question)
 
-        def removeQuestion(self, question):
-            if self.questions == None:
-                return False
-            for q in self.questions:
-                if q is question:
-                    self.questions.remove(question)
-                    return True
+    def remove_question(self, question):
+        if self.questions is None:
             return False
+        for q in self.questions:
+            if q is question:
+                self.questions.remove(question)
+                return True
+        return False
 
 
 class Question:
@@ -696,7 +695,7 @@ class Conversation:
             i += 1
         return string
 
-    def addQuestion(self, question):
+    def add_question(self, question):
         if self.questions is None:
             self.questions = [question]
         else:

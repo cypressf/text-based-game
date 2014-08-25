@@ -20,7 +20,7 @@ while True:
             e.printEvents()
             s = raw_input("enter event number, or \"main\" to go to main menu: ")
             if s == "main": break
-            event = e.getEvent(int(s))
+            event = e.get_event(int(s))
             print event
             # todo create an event editor
             # while True:
@@ -39,7 +39,7 @@ while True:
             e.printItems()
             s = raw_input("enter item number, or \"main\" to go to main menu: ")
             if s == "main": break
-            item = e.getItem(int(s))
+            item = e.get_item(int(s))
             e.printItemDetail(int(s))
         
     elif choice == "3":
@@ -55,7 +55,7 @@ while True:
             e.printLocations()
             s = raw_input("enter location number, or \"main\" to go to main menu: ")
             if s == "main": break
-            location = e.getLocation(int(s))
+            location = e.get_location(int(s))
             e.printLocationDetail(int(s))
         
     elif choice == "5":
