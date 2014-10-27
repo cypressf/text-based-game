@@ -43,11 +43,16 @@ class Runner:
             # check the events and execute them until
             # there are no more to execute, then break
             while True:
-                event_text = self.world.load_events()
-                if event_text:
-                    for page in event_text:
-                        print page
-                        command = raw_input("press enter to continue")
+                triggered_events = self.world.load_events()
+                if triggered_events:
+                    for event in triggered_events:
+                        event._Event__execute()
+                        if isinstance(event.text, basestring):
+                            print event.text
+                        else:
+                            for page in event.text:
+                                print page
+                                raw_input("press enter to continue")
                 else:
                     break
 
@@ -58,8 +63,15 @@ class Runner:
                 print("move not implemented")
 
             elif verb == "drop":
-                #todo
-                print("drop not implemented")
+                if len(command) < 2:
+                    print("You consider dropping something... no, never mind")
+                else:
+                    item_name = command[1]
+                    item = self.world.get_item(item_name)
+                    if player.drop_item(item):
+                        print("You drop the {} to the ground.".format(item.name))
+                    else:
+                        print("You can't drop that.")
 
             elif verb == "pickup":
                 if len(command) < 2:
@@ -68,7 +80,7 @@ class Runner:
                     item_name = command[1]
                     item = self.world.get_item(item_name)
                     if item and player.pickup_item(item):
-                        print("You pick up {}".format(item.name))
+                        print("You pick up the {}".format(item.name))
                     else:
                         print("You can't pick that up")
 
@@ -108,6 +120,9 @@ class Runner:
                     print("You peek inside your bottomless backpack. You have:")
                     for item in player.items:
                         print(item)
+
+            elif verb == "use":
+                print("use not implemented")
 
             elif verb == "talk":
                 print("talk not implemented")

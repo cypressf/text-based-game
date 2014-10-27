@@ -35,15 +35,11 @@ class World:
 
     # todo
     # test loadEvents to make sure it executes event only when check() returns true
-    # I think it's always executing it, or something weird because 'if event.check()'
-    # is not the same as 'bool = event.check(), if bool'
+    # I think it's always executing it, or something weird because 'if event.__check()'
+    # is not the same as 'bool = event.__check(), if bool'
     def load_events(self):
         """Checks all events in self.events and executes them if they are triggered."""
-        for event in self.events:
-            if event.check():
-                event.execute()
-                return event.text
-        return False
+        return [event for event in self.events if event._Event__check()]
 
     def get_location(self, location_name):
         for location in self.locations:
@@ -235,130 +231,50 @@ class Player(Thing):
         for thing in things:
             if thing not in usable_things:
                 return False
+        # TODO: actually put the items in "use" state.
+        # TODO: It could be helpful to construct a list of "currently used" items
+        # TODO: that the event loop could look at.
         return things
 
 
 class Event:
-    """Represents all events in the game
+    """
+    Represents an event in the game
     
-    An event has triggers, which tell it when
-    to execute; and actions, which tell it what to
-    do. All triggers are in the form of states:
-    it checks the state of specific objects to see
-    if they match the trigger state. All actions
-    are in the form of object-state modification
-    lists.
+    An event has two callbacks: conditional(), which tells
+    it whether or not to trigger the actions; and and actions(),
+    which tell it how to change the game state when it triggers.
+
+    An event also has text. This can be either a list of pages
+    of text, or simply a single block of text.
     """
 
-    def __init__(self):
-        self.triggers = None  # [{"object": object, "variable_name": variable_name, "state":state}, ...]
-        self.actions = None  # [{"object": object, "variable_name": variable_name, "state":state}, ...]
+    def __init__(self, text, conditional=None, actions=None):
+        self.conditional = conditional  # a function that tests to see if this event has triggered yet
+        self.actions = actions  # a function that changes the state fo the world when this event triggers
         self.is_used = False  # to prevent multiple executions
-        self.text = None  # [page1, page2, page3... ] what it tells the player as the event is happening
-        self.location = None
+        self.text = text  # [page1, page2, page3... ] what it tells the player as the event is happening
 
     def __str__(self):
-        if self.triggers is None:
-            string = "No triggers\n"
-        else:
-            string = "Triggers:\n"
-            for trigger in self.triggers:
-                obj = trigger["object"]
-                var = trigger["variable_name"]
-                trigger_state = trigger["state"]
-                current_state = vars(obj)[var]
-                if current_state == trigger_state:
-                    string += "* "
-                string = string + var + " of " + repr(obj) + ": current state " + str(
-                    current_state) + ", trigger state " + str(trigger_state) + "\n"
-
-        if self.actions is None:
-            string += "No actions\n"
-        else:
-            string += "\nActions:\n"
-            for action in self.actions:
-                obj = action["object"]
-                var = action["variable_name"]
-                new_state = action["state"]
-                current_state = vars(obj)[var]
-                string = string + var + " of " + repr(obj) + ": current state " + str(
-                    current_state) + ", new state " + str(new_state) + "\n"
-
+        string = ""
         if self.text is None:
             string += "No text"
         else:
             string += "\nText:\n"
-            for page in self.text:
-                string = string + page + "\n-----------------\n"
+            if isinstance(self.text, basestring):
+                string += self.text + "\n"
+            else:
+                for page in self.text:
+                    string += page + "\n-----------------\n"
         return string
 
-    def add_trigger(self, obj, variable, value, opposite=False):
-        if self.triggers is None:
-            self.triggers = [{"object": obj, "variable_name": variable, "state": value, "opposite": opposite}]
-        else:
-            self.triggers.append({"object": obj, "variable_name": variable, "state": value, "opposite": opposite})
+    def __check(self):
+        return not self.is_used and self.conditional()
 
-    def add_action(self, obj, variable, value):
-        if self.actions is None:
-            self.actions = [{"object": obj, "variable_name": variable, "state": value}]
-        else:
-            self.actions.append({"object": obj, "variable_name": variable, "state": value})
-
-    def add_text(self, text):
-        if self.text is None:
-            self.text = [text]
-        else:
-            self.text.append(text)
-
-    def check(self):
+    def __execute(self):
         if self.is_used:
             return False
-        if self.triggers is None:
-            return True
-        for trigger in self.triggers:
-            obj = trigger["object"]
-            state = trigger["state"]
-            var_name = trigger["variable_name"]
-            var = vars(obj)[var_name]
-            if isinstance(var, list):
-                if trigger["opposite"]:
-                    if len(var) != len(state):
-                        return True
-                    for item in var:
-                        if item not in state:
-                            return True
-                    return False
-
-                else:
-                    if len(var) != len(state):
-                        return False
-                    for item in var:
-                        if item not in state:
-                            return False
-                    return True
-            else:
-                if trigger["opposite"]:
-                    if var == state:
-                        return False
-                else:
-                    if var != state:
-                        return False
-        return True
-
-    def execute(self, append=True):
-        if self.is_used:
-            return False
-        for action in self.actions:
-            obj = action["object"]
-            state = action["state"]
-            var_name = action["variable_name"]
-            if isinstance(vars(obj)[var_name], list):
-                if append:
-                    vars(obj)[var_name] = vars(obj)[var_name] + state
-                else:
-                    vars(obj)[var_name] = state
-            else:
-                vars(obj)[var_name] = state
+        self.actions()
         self.is_used = True
         return True
 
