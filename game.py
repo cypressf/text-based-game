@@ -292,13 +292,13 @@ class World:
 
     def __str__(self):
         string = "\n"
-        string += format("Player ---- {}\n", str(self.player))
+        string += "Player ---- {}\n".format(str(self.player))
         for location in self.locations:
-            string += format("Location ---- {}\n", str(location))
+            string += "Location ---- {}\n".format(str(location))
         for item in self.items:
-            string += format("Items ---- {}\n", str(item))
+            string += "Items ---- {}\n".format(str(item))
         for event in self.events:
-            string += format("Event ---- {}\n", str(event))
+            string += "Event ---- {}\n".format(str(event))
         return string
 
     # todo
@@ -446,8 +446,8 @@ class Location(Thing):
 class Player(Thing):
     """Represents a player in the game."""
 
-    def __init__(self, na, desc, location=None, items=None):
-        Thing.__init__(self, na, desc)
+    def __init__(self, name, desc, location=None, items=None):
+        Thing.__init__(self, name, desc)
         if items is None:
             items = []
         self.location = location
