@@ -437,10 +437,8 @@ class Location(Thing):
     def remove_location(self, location):
         self.locations.remove(location)
 
-
     def remove_item(self, item):
         self.items.remove(item)
-
 
 
 class Player(Thing):
