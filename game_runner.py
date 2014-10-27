@@ -65,7 +65,7 @@ class Runner:
                 if len(command) < 2:
                     print("You consider picking up something... no, never mind")
                 else:
-                    item_name = command[1].lower()
+                    item_name = command[1]
                     item = self.world.get_item(item_name)
                     if item and player.pickup_item(item):
                         print("You pick up {}".format(item.name))
@@ -79,7 +79,15 @@ class Runner:
                     for item in player.location.items:
                         print(item)
                 else:
-                    print("looking at items not implemented")
+                    item_name = command[1]
+                    item = self.world.get_item(item_name)
+                    if not item:
+                        item = self.world.get_location(item_name)
+                    if item and item in player.location.items + player.items + [player.location]:
+                        player.observe(item)
+                        print(item)
+                    else:
+                        print("You see no {0}. Where's the {0}?".format(item_name))
 
             elif verb == "go" or verb == "goto":
                 if len(command) < 2:
@@ -92,6 +100,14 @@ class Runner:
                         print(location.description)
                     else:
                         print("cannot move to {}".format(location_name))
+
+            elif verb == "inventory":
+                if not player.items:
+                    print("You have nothing in your backpack.")
+                else:
+                    print("You peek inside your bottomless backpack. You have:")
+                    for item in player.items:
+                        print(item)
 
             elif verb == "talk":
                 print("talk not implemented")
