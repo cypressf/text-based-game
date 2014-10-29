@@ -53,6 +53,12 @@ class World:
                 return item
         return None
 
+    def get_person(self, person_name):
+        for person in self.characters:
+            if person_name.lower() == person.name.lower():
+                return person
+        return None
+
     def get_things(self, thing_class):
         things = []
         if thing_class is Item:
@@ -92,7 +98,7 @@ class Thing:
 class Item(Thing):
     """Represents all Items in the game."""
 
-    def __init__(self, name, description, location=None, is_movable=False):
+    def __init__(self, name, description, location, is_movable=False):
         """Creates an Item.
         
         Just like a Thing, an item only requires a name and a description,
@@ -118,10 +124,15 @@ class Item(Thing):
 
 
 class Person(Item):
-    """Represents all People in the game.
+    """Represents a non-playable-character in the game.
     
     People are similar to Items, but they each
-    have a conversation object in them as well
+    have a conversation object in them as well.
+
+    If you specify is_movable=True, you'll be able to pickup the person
+    and put them in your inventory. I'm leaving this as an option in case
+    your game contains an anthropomorphic map, a digital communicator,
+    or a little fairy gnome or something that you can pick up.
     """
 
     def __init__(self, name, description, location=None, is_movable=False, conversation=None):
@@ -179,6 +190,7 @@ class Player(Thing):
             items = []
         self.location = location
         self.items = items
+        self.items_being_used = []
         self.observed_things = []
 
     def can_move(self, location):
@@ -227,14 +239,14 @@ class Player(Thing):
         self.observed_things.append(thing)
 
     def use(self, things):
-        usable_things = self.location.items + self.items + [self.location]
         for thing in things:
-            if thing not in usable_things:
+            if not self.can_see(thing):
                 return False
-        # TODO: actually put the items in "use" state.
-        # TODO: It could be helpful to construct a list of "currently used" items
-        # TODO: that the event loop could look at.
-        return things
+        self.items_being_used = things
+        return self.items_being_used
+
+    def can_see(self, thing):
+        return thing in self.location.items + self.items + [self.location]
 
 
 class Event:
@@ -302,14 +314,15 @@ class Question:
 
     def __str__(self):
         if self.is_used:
-            return "Re-ask:", self.text
+            return "Re-ask: {}".format(self.text)
         else:
-            return "Ask:", self.text
+            return "Ask: {}".format(self.text)
 
 
 class Conversation:
     def __init__(self):
         self.questions = []
+        self.bye_message = "Bye!"
 
     def __str__(self):
         string = ""
@@ -325,4 +338,6 @@ class Conversation:
     def ask(self, index):
         question = self.questions[index - 1]
         question.is_used = True
+        self.questions.remove(question)
+        self.questions += question.answer.questions
         return question.answer

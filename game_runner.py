@@ -37,27 +37,32 @@ class Runner:
         f.close()
         print "The game has been saved to " + filename
 
+    def execute_events(self):
+        """Check the events and execute them until there are no more to execute"""
+        while True:
+            triggered_events = self.world.load_events()
+            if triggered_events:
+                for event in triggered_events:
+                    event._Event__execute()
+                    if isinstance(event.text, basestring):
+                        print event.text
+                    else:
+                        for page in event.text:
+                            print page
+                            raw_input("press enter to continue")
+            else:
+                self.world.player.items_being_used = []
+                break
+
     def run(self):
         player = self.world.player
         while True:
-            # check the events and execute them until
-            # there are no more to execute, then break
-            while True:
-                triggered_events = self.world.load_events()
-                if triggered_events:
-                    for event in triggered_events:
-                        event._Event__execute()
-                        if isinstance(event.text, basestring):
-                            print event.text
-                        else:
-                            for page in event.text:
-                                print page
-                                raw_input("press enter to continue")
-                else:
-                    break
+            self.execute_events()
 
             command = raw_input("> ")
             command = command.split()
+            if not command:
+                continue
             verb = command[0].lower()
             if verb == "move":
                 print("move not implemented")
@@ -122,10 +127,41 @@ class Runner:
                         print(item)
 
             elif verb == "use":
-                print("use not implemented")
+                if len(command) < 2:
+                    print("You think about using something... then think again.")
+                else:
+                    items = []
+                    for item_name in command[1:]:
+                        if item_name in ["with", "and", "on"]:
+                            continue
+                        item = self.world.get_item(item_name)
+                        if item:
+                            items.append(item)
+                    if items:
+                        player.use(items)
 
             elif verb == "talk":
-                print("talk not implemented")
+                if len(command) < 2:
+                    print("You mutter to yourself, absentmindedly.")
+                else:
+                    for word in command[1:]:
+                        if word in ["to", "with"]:
+                            continue
+                        else:
+                            person = self.world.get_person(word)
+                            break
+                    if person and player.can_see(person):
+                        while True:
+                            if not person.conversation.questions:
+                                print(person.conversation.bye_message)
+                                break
+                            print(person.conversation)
+                            choice = raw_input("enter a number, or \"bye\" to leave: ")
+                            if choice == "bye":
+                                print(person.conversation.bye_message)
+                                break
+                            else:
+                                print(person.conversation.ask(int(choice)))
 
             elif verb == "save":
                 self.save()
