@@ -56,6 +56,9 @@ class Runner:
 
     def run(self):
         player = self.world.player
+        print("type 'intentory' to see your inventory\n"
+              "type 'quit' to save and stop the game\n"
+              "type 'look' to see what's around you\n")
         while True:
             self.execute_events()
 
@@ -78,7 +81,7 @@ class Runner:
                     else:
                         print("You can't drop that.")
 
-            elif verb == "pickup":
+            elif verb in ["pickup", "grab", "take"]:
                 if len(command) < 2:
                     print("You consider picking up something... no, never mind")
                 else:
@@ -89,34 +92,38 @@ class Runner:
                     else:
                         print("You can't pick that up")
 
-            elif verb == "look" or verb == "examine":
+            elif verb in ["look", "examine", "observe"]:
                 if len(command) < 2:
                     print("You look around you.")
-                    print(player.location)
-                    for item in player.location.items:
-                        print(item)
+                    print("You're at {}".format(player.location))
+                    print(player.location.description)
+                    if player.location.items:
+                        print("You see the following things:")
+                        for item in player.location.items:
+                            print(item)
+                    else:
+                        print("You see nothing around.")
                 else:
                     item_name = command[1]
                     item = self.world.get_item(item_name)
                     if not item:
                         item = self.world.get_location(item_name)
-                    if item and item in player.location.items + player.items + [player.location]:
-                        player.observe(item)
-                        print(item)
+                    if item and player.observe(item):
+                        print(item.description)
                     else:
                         print("You see no {0}. Where's the {0}?".format(item_name))
 
-            elif verb == "go" or verb == "goto":
+            elif verb in ["go", "goto"]:
                 if len(command) < 2:
                     print("You wander aimlessly around, going nowhere in particular")
                 else:
                     location_name = command[1]
                     location = self.world.get_location(location_name)
                     if location is not None and player.move(location):
-                        print("You moved to {}".format(location.name))
+                        print("You go to {}".format(location.name))
                         print(location.description)
                     else:
-                        print("cannot move to {}".format(location_name))
+                        print("cannot go to {}".format(location_name))
 
             elif verb == "inventory":
                 if not player.items:
@@ -161,12 +168,12 @@ class Runner:
                                 print(person.conversation.bye_message)
                                 break
                             else:
-                                print(person.conversation.ask(int(choice)))
+                                print("{}\n".format(person.conversation.ask(int(choice))))
 
             elif verb == "save":
                 self.save()
 
-            elif verb == "quit":
+            elif verb in ["quit", "exit"]:
                 self.save()
                 break
 

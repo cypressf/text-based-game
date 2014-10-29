@@ -33,45 +33,33 @@ class World:
             string += "Event ---- {}\n".format(str(event))
         return string
 
-    # todo
-    # test loadEvents to make sure it executes event only when check() returns true
-    # I think it's always executing it, or something weird because 'if event.__check()'
-    # is not the same as 'bool = event.__check(), if bool'
     def load_events(self):
         """Checks all events in self.events and executes them if they are triggered."""
         return [event for event in self.events if event._Event__check()]
 
     def get_location(self, location_name):
+        """Given the name of a location, return a matching Location, or None."""
         for location in self.locations:
             if location_name.lower() == location.name.lower():
                 return location
         return None
 
     def get_item(self, item_name):
+        """Given the name of an item, return a matching Item, or None."""
         for item in self.items:
             if item_name.lower() == item.name.lower():
                 return item
         return None
 
     def get_person(self, person_name):
+        """Given the name of a person, return the matching Person, or None."""
         for person in self.characters:
             if person_name.lower() == person.name.lower():
                 return person
         return None
 
-    def get_things(self, thing_class):
-        things = []
-        if thing_class is Item:
-            things = self.items
-        elif thing_class is Person:
-            things = self.characters
-        elif thing_class is Location:
-            things = self.locations
-        elif thing_class is Player:
-            things = [self.player]
-        return things
-
     def add_thing(self, thing):
+        """Add a person, location, item, or player to the game world."""
         if isinstance(thing, Person):
             self.characters.append(thing)
         elif isinstance(thing, Location):
@@ -80,6 +68,13 @@ class World:
             self.items.append(thing)
         elif isinstance(thing, Player):
             self.player = thing
+
+    def add_things(self, things):
+        """
+        Add a list of things to the game world. Convenience method to avoid calling add_thing many times.
+        """
+        for thing in things:
+            self.add_thing(thing)
 
 
 class Thing:
@@ -92,7 +87,7 @@ class Thing:
         self.observed = 0
 
     def __str__(self):
-        return self.name + ": " + self.description
+        return self.name
 
 
 class Item(Thing):
@@ -140,7 +135,7 @@ class Person(Item):
         self.conversation = conversation
 
     def __str__(self):
-        return self.name + ": " + self.description + "\n" + str(self.conversation)
+        return self.name
 
 
 class Location(Thing):
@@ -235,8 +230,12 @@ class Player(Thing):
             return True
 
     def observe(self, thing):
-        thing.observed += 1
-        self.observed_things.append(thing)
+        if self.can_see(thing):
+            thing.observed += 1
+            self.observed_things.append(thing)
+            return True
+        else:
+            return False        
 
     def use(self, things):
         for thing in things:
@@ -297,7 +296,7 @@ class Answer:
         self.questions = []
 
     def __str__(self):
-        return self.text
+        return "    \"{}\"".format(self.text)
 
     def add_question(self, question):
         self.questions.append(question)
@@ -313,10 +312,7 @@ class Question:
         self.is_used = False
 
     def __str__(self):
-        if self.is_used:
-            return "Re-ask: {}".format(self.text)
-        else:
-            return "Ask: {}".format(self.text)
+        self.text
 
 
 class Conversation:
@@ -328,7 +324,7 @@ class Conversation:
         string = ""
         i = 1
         for question in self.questions:
-            string = string + str(i) + ") " + str(question) + "\n"
+            string += "{}) {}\n".format(i, question.text)
             i += 1
         return string
 
